@@ -41,36 +41,31 @@ NetflixPrediction
                 <div class="col">
                     <form method="POST" enctype="multipart/form-data">
                         <!-- Image Input block-->
+                        <div class="form-group">
                         <label for="translation">
                             <blockquote class="blockquote">
                                 <p class="mb-2">Upload the poster:</p>
                             </blockquote>
                         </label>
-                        <div>
-                            {{form.photo(class= "form-control")}}
-                        </div>
-                        <br>
-                        <div>
-                            {{form.submit(class= "btn btn-success")}}
-                        </div>
-                    </form>
-                    {% if file_url %}
+                        <input class="form-control" type="file" name="file" rows="1" required>
+                    </div>
+                    {% if filename %}
                         <div class="mt-5">
-                            <img src="{{ file_url }}" style="width: 100px;">
+                            <img src="{{ url_for('display_image', filename=filename) }}" style="width: 100px;">
                         </div>
                     {% endif %}
                     <br>
                     <br>
-                    <form method="POST">
+                   
                         <!-- Text Input block-->
                         <div class="form-group">
                             <label for="translation">
                                 <blockquote class="blockquote">
-                                    <p class="mb-2">Enter the text:</p>
+                                    <p class="mb-2">Enter the summary:</p>
                                 </blockquote>
                             </label>
                             <textarea class="form-control" name="message" rows="1" 
-                                placeholder="message"></textarea>
+                                placeholder="message" required></textarea>
                         </div>
 
                         <!-- Submit text -->
