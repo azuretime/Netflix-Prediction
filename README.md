@@ -1,7 +1,7 @@
 netflix_prediction
 ==============================
 
-: netflix_ prediction ml pipline
+Netflix Prediction ML pipline
 
 Project Organization
 ------------
