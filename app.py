@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 import os
+import logging
 from predict import predict_votes, predict_score, getImgFeatures
 webapp_root = "webapp"
 
@@ -25,7 +26,7 @@ def form_response(dict_request):
     try:
         if validate_input(dict_request) and ('file' in request.files):
             data = list(dict_request.values())
-            print('data=============',data)
+            logging.info('data =',data)
 
             image = request.files['file']
             file_path = ''
@@ -36,7 +37,7 @@ def form_response(dict_request):
             
             features_popularity, features_quality = getImgFeatures(file_path)
             popularity = predict_votes(data, features_popularity)
-            quality = 'High'
+            quality = predict_score(data,features_quality )
             response = 'Popularity: ' + popularity +'\n' + 'Quality: ' + quality
             return response, filename
     except Emptymessage as e:
@@ -46,19 +47,21 @@ def form_response(dict_request):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        # try:
+        try:
             if request.form and ('file' in request.files):
                 dict_req = dict(request.form)
                 response, filename = form_response(dict_req)
 
                 return render_template("index.html", response=response, filename= filename)
-        # except Exception as e:
-        #     print(e)
-        #     error = {"error": "Something went wrong!! Try again later!"}
-        #     error = {"error": e}
-        #     return render_template("404.html", error=error)
+        except Exception as e:
+            print(e)
+            error = {"error": "Something went wrong!! Try again later!"}
+            error = {"error": e}
+            return render_template("404.html", error=error)
     else:
         return render_template("index.html")
+    
+
     return render_template("index.html")
 
 @app.route('/display/<filename>', methods=["GET"])
