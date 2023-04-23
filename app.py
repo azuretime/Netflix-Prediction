@@ -3,8 +3,8 @@ from werkzeug.utils import secure_filename
 import os
 import numpy as np
 import yaml
-import joblib 
-import logging
+from PIL import Image
+import matplotlib.pyplot as plt
 
 webapp_root = "webapp"
 params_path = "params.yaml"
@@ -44,6 +44,7 @@ def form_response(dict_request):
     try:
         if validate_input(dict_request):
             data = dict_request.values()
+            print('data=============',data)
             response = 'predict(data 7658765876576)'
             return response
     except Emptymessage as e:
@@ -61,8 +62,16 @@ def index():
                 image = request.files['file']
                 if image.filename != '':
                     filename = secure_filename(image.filename)
-                    logging.info('upload_image filename: ' + filename)
+                    print('upload_image filename: ' + filename)
                     image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                type = request.form['type']
+                genre = request.form['genre']
+                awards_received = request.form['awards_received']
+                awards_nominated = request.form['awards_nominated']
+                director = request.form['director']
+                writer = request.form['writer']
+                rating = request.form['rating']
+
                 return render_template("index.html", response=response, filename= filename)
         except Exception as e:
             print(e)

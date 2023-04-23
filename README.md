@@ -1,7 +1,29 @@
-netflix_prediction
+Netflix Prediction
 ==============================
 
-Netflix Prediction ML pipline
+A python Flask web app that allows uploading a poster, entering the type of production, genre, rating, director, writer, awards received and nominated for to predict the popularity and quality of the movies and TV series. We deploy the prediction model as a real-time API service.
+
+1. Install packages: `pip install -r /path/to/requirements.txt`
+
+2. Run app: `python3 app.py`
+
+3. Open `http://localhost:5001` in your browser
+
+Important Files
+------------
+
+1. webapp folder
+
+    The folder contains frontend design and supporting files
+
+    a. model_webapp_dir: keep the model file
+    b. static: keep css, js, images files
+    c. template: contain html files
+
+2. app.py
+
+   It implements the main backend logic
+
 
 Project Organization
 ------------
@@ -31,7 +53,8 @@ Project Organization
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
     │                         generated with `pip freeze > requirements.txt`
     │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
+    ├── app.py             <- Implements the main backend logic
+    ├── webapp             <- The folder contains frontend design and supporting files
     ├── src                <- Source code for use in this project.
     │   ├── __init__.py    <- Makes src a Python module
     │   │
