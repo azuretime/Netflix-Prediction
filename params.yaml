@@ -1,0 +1,16 @@
+model_dir: webapp/model_webapp_dir/
+
+model_webapp_dir: 
+  image: webapp/model_webapp_dir/image_model.pkl
+  popularity: webapp/model_webapp_dir/xgb_model_for_votes.json
+  quality: webapp/model_webapp_dir/xgb_model_for_score.json
+
+encoder:
+  director: webapp/model_webapp_dir/Director_encoder.pkl
+  type: webapp/model_webapp_dir/series_movie_encoder.pkl
+  rating: webapp/model_webapp_dir/View_rating_encoder.pkl
+  writer: webapp/model_webapp_dir/Writer_encoder.pkl
+
+scaler: 
+  popularity: webapp/model_webapp_dir/standard_scaler_votes_20features.pkl
+  quality: webapp/model_webapp_dir/standard_scaler_score_20features.pkl
