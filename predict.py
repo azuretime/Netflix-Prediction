@@ -1,7 +1,6 @@
 from PIL import Image
 import numpy as np 
 import pandas as pd 
-import matplotlib.pyplot as plt
 from keras.applications.inception_v3 import preprocess_input
 import pickle
 import xgboost as xgb
@@ -29,17 +28,20 @@ def img_to_embedding(image,model):
     try:
         image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
         img_preprocessed = preprocess_input(image)
-        feat = model.predict(img_preprocessed)
+        features = model.predict(img_preprocessed)
     except Exception as error: 
         print("An exception occurred")
         print(error)
   
-    return feat
+    return features
 
 
 def getImgFeatures(file_path):
     img_arr = url_to_array(file_path)
-    features = img_to_embedding(img_arr,config["model_webapp_dir"]['image'])
+    model_path = config["model_webapp_dir"]['image']
+    with open(model_path, "rb") as f:
+        loaded_model = pickle.load(f)
+    features = img_to_embedding(img_arr, loaded_model)
     # Convert array to dataframe and assign column names
     col_name = ['poster_'+str(i+1) for i in range(features.shape[1])]
     features_df = pd.DataFrame(features,columns=col_name)
@@ -56,19 +58,15 @@ def predict_votes(input_list,poster_features):
     # input_list example: ['Movie', 'Action', 'G', 'director', 'writer', '4', '2'] type, genre, rating , 'director', 'writer', awards received, nominated, poster
     # Load the fitted LabelEncoder
     with open(config["encoder"]['type'], 'rb') as f:
-        print("series_movie_encoder")
         series_movie_encoder = pickle.load(f)
 
     with open(config["encoder"]['director'], 'rb') as f:
-        print("director_encoder")
         director_encoder = pickle.load(f)
 
     with open(config["encoder"]['rating'], 'rb') as f:
-        print("view_rating_encoder")
         view_rating_encoder = pickle.load(f)
 
     with open(config["encoder"]['writer'], 'rb') as f:
-        print("writer_encoder")
         writer_encoder = pickle.load(f)
 
     series_movie=series_movie_encoder.transform([input_list[0]]).item()
@@ -139,13 +137,15 @@ def predict_votes(input_list,poster_features):
     loaded_model.load_model(config["model_webapp_dir"]['popularity'])
     
     dtest = xgb.DMatrix(scaled_new_row)
-    predictions = loaded_model.predict(dtest).item()
-    if predictions==0:
-      return "High"
-    elif predictions==1:
-      return "Low"
-    elif predictions==2:
-      return "Medium"
+    predictions = loaded_model.predict(dtest)
+    highest_value_index = np.argmax(predictions)
+
+    if highest_value_index==0:
+        return "High"
+    elif highest_value_index==1:
+        return "Low"
+    elif highest_value_index==2:
+        return "Medium"
     
 
 def predict_score(input_list,features_quality): 
@@ -158,10 +158,10 @@ def predict_score(input_list,features_quality):
     with open(config["encoder"]['director'], 'rb') as f:
         director_encoder = pickle.load(f)
 
-    series_movie=series_movie_encoder.transform(input_list[0])
-    Awards_nominated_for=input_list[6]
-    Awards_received=input_list[5]
-    Director=director_encoder.transform(input_list[3])
+    series_movie=series_movie_encoder.transform([input_list[0]]).item()
+    Awards_nominated_for=int(input_list[6])
+    Awards_received=int(input_list[5])
+    Director=director_encoder.transform([input_list[3]]).item()
 
     Genre_Family = 0
     Genre_Documentary = 0
@@ -215,10 +215,12 @@ def predict_score(input_list,features_quality):
     loaded_model.load_model(config["model_webapp_dir"]['quality'])
     
     dtest = xgb.DMatrix(scaled_new_row)
-    predictions = loaded_model.predict(dtest).item()
-    if predictions==0:
-      return "High"
-    elif predictions==1:
-      return "Low"
-    elif predictions==2:
-      return "Medium"
+    predictions = loaded_model.predict(dtest)
+    highest_value_index = np.argmax(predictions)
+
+    if highest_value_index==0:
+        return "High"
+    elif highest_value_index==1:
+        return "Low"
+    elif highest_value_index==2:
+        return "Medium"
